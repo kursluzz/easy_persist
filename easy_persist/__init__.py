@@ -24,20 +24,23 @@ class DiskStorage:
     ds['some key'] |= {4} # remove value from the set and save
     supports all picklable formats
     https://docs.python.org/3.6/library/pickle.html"""
-    def __init__(self, name, path='/tmp'):
-        self.path = os.path.join(path, f'{name}.db')
+
+    def __init__(self, name, path="/tmp"):
+        self.path = os.path.join(path, f"{name}.db")
         with self._connection() as conn:
             c = conn.cursor()
-            c.execute('''CREATE TABLE IF NOT EXISTS ds (
-            key TEXT PRIMARY KEY NOT NULL, 
+            c.execute(
+                """CREATE TABLE IF NOT EXISTS ds (
+            key TEXT PRIMARY KEY NOT NULL,
             value TEXT
-            )''')
+            )"""
+            )
             conn.commit()
 
     def __getitem__(self, key):
         with self._connection() as conn:
             c = conn.cursor()
-            c = c.execute('SELECT value FROM ds WHERE key=?', (key,))
+            c = c.execute("SELECT value FROM ds WHERE key=?", (key,))
             row = c.fetchone()
             return pickle.loads(row[0]) if row else None
 
@@ -45,13 +48,14 @@ class DiskStorage:
         with self._connection() as conn:
             c = conn.cursor()
             value = pickle.dumps(value)
-            c.execute('REPLACE INTO ds (key, value) VALUES (?, ?)', (key, value))
+            c.execute("REPLACE INTO ds (key, value) VALUES (?, ?)", (key, value))
             conn.commit()
 
     def _connection(self):
         return DiskStorageConnection(self.path)
 
-if __name__ == '__main__':
-    ds = DiskStorage('my_db', '/home/oleg')
-    ds['users'] = [{'user1': 'aaa'}, {'user1': 'aaa'}]
-    print(ds['users'])
+
+if __name__ == "__main__":
+    ds = DiskStorage("my_db", "/home/oleg")
+    ds["users"] = [{"user1": "aaa"}, {"user1": "aaa"}]
+    print(ds["users"])
