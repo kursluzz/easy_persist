@@ -1,2 +1,2 @@
 # Easy Persist
-Python simple filesystem storage. Based on sqlite and picle.
+An easy to use filesystem storage. Based on sqlite and picle.
